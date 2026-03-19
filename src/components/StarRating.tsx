@@ -1,5 +1,6 @@
 import React from 'react';
 import { Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface StarRatingProps {
   rating: number;
@@ -16,11 +17,13 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange, interac
           type="button"
           disabled={!interactive}
           onClick={() => onRatingChange(star)}
-          className={`transition-transform hover:scale-110 ${
-            star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-          }`}
+          className={cn(
+            "transition-transform",
+            interactive && "hover:scale-110 cursor-pointer",
+            star <= rating ? "text-primary fill-primary" : "text-muted border-none"
+          )}
         >
-          <Star size={20} />
+          <Star size={20} className={cn(star > rating && "text-muted-foreground")} />
         </button>
       ))}
     </div>
