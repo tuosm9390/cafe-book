@@ -1,35 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCafes } from "../hooks/useCafes";
 import { addCafe, updateCafe, deleteCafe } from "../api/cafeApi";
 import CafeForm from "../components/CafeForm";
-import { Plus, Edit2, Trash2, LogOut } from "lucide-react";
+import { Plus, Edit2, Trash2, LogOut, Map as MapIcon, Loader2 } from "lucide-react";
 import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import { loadKakaoMapSDK } from "../utils/mapLoader";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db, auth, handleFirestoreError } from "../api/firebase";
 
 const AdminPage: React.FC = () => {
   const { cafes, loading, refresh } = useCafes();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCafe, setEditingCafe] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
+  const loadStartTime = React.useRef<number | null>(null);
+
+  // 데이터 로딩 시간 측정 (SC-002 검증)
+  useEffect(() => {
+    if (loading) {
+      loadStartTime.current = performance.now();
+    } else if (!loading && loadStartTime.current !== null) {
+      const loadTime = (performance.now() - loadStartTime.current) / 1000;
+      console.log(`[AdminPage] 데이터 로딩 완료: ${loadTime.toFixed(2)}초`);
+      if (loadTime > 2.0) {
+        console.warn(`[AdminPage] 경고: 로딩 시간이 목표치(2.0초)를 초과했습니다.`);
+      }
+      loadStartTime.current = null;
+    }
+  }, [loading]);
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login");
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      alert("로그아웃 중 오류가 발생했습니다.");
+    }
   };
 
+  useEffect(() => {
+    loadKakaoMapSDK().catch((err) => console.error("Kakao SDK 에러:", err));
+
+    const ensureAdminUser = async () => {
+      if (auth.currentUser) {
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        try {
+          const userDoc = await getDoc(userRef);
+          if (!userDoc.exists()) {
+            console.log("[AdminPage] 사용자가 없어 자동 생성합니다...");
+            await setDoc(userRef, {
+              email: auth.currentUser.email,
+              role: "admin",
+              createdAt: new Date().toISOString()
+            });
+            setUserRole("admin");
+          } else {
+            setUserRole(userDoc.data().role);
+          }
+        } catch (err) {
+          console.error("[AdminPage] 권한 확인 중 치명적 오류 (네트워크 차단 의심):", err);
+          handleFirestoreError(err);
+        }
+      }
+    };
+    ensureAdminUser();
+  }, [auth.currentUser]);
+
   const handleSubmit = async (data: any) => {
+    console.log("[AdminPage] 저장 프로세스 시작:", data);
     try {
       if (editingCafe) {
         await updateCafe(editingCafe.id, data);
       } else {
         await addCafe({ ...data, createdBy: "admin" });
       }
+      console.log("[AdminPage] 저장 성공");
       setIsFormOpen(false);
       setEditingCafe(null);
       refresh();
-    } catch (error) {
-      console.error("Failed to save cafe:", error);
-      alert("저장에 실패했습니다.");
+      alert("성공적으로 저장되었습니다.");
+    } catch (error: any) {
+      console.error("[AdminPage] 저장 실패 상세 로그:", error);
+      if (error.message?.includes('offline')) {
+        alert("현재 오프라인 상태이거나 Firestore 서버에 접속할 수 없습니다. 방화벽 설정을 확인해 주세요.");
+      } else {
+        alert(`저장 중 오류 발생: ${error.message}`);
+      }
     }
   };
 
@@ -44,7 +103,15 @@ const AdminPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">카페 데이터 관리</h1>
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold text-gray-900">카페 데이터 관리</h1>
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              <MapIcon size={16} className="mr-1" /> 지도 돌아가기
+            </button>
+          </div>
           <div className="flex space-x-4">
             <button
               onClick={() => {
@@ -89,11 +156,11 @@ const AdminPage: React.FC = () => {
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td
-                    colSpan={3}
-                    className="px-6 py-8 text-center text-gray-500"
-                  >
-                    로딩 중...
+                  <td colSpan={3} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center text-gray-500">
+                      <Loader2 size={32} className="animate-spin mb-2 text-blue-500" />
+                      <span className="text-sm font-medium">카페 목록을 불러오는 중입니다...</span>
+                    </div>
                   </td>
                 </tr>
               ) : cafes.length === 0 ? (

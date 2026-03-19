@@ -11,3 +11,14 @@ export const filterCafes = (cafes: Cafe[], searchTerm: string): Cafe[] => {
     cafe.name.toLowerCase().includes(cleanSearchTerm)
   );
 };
+
+export const mapKakaoPlaceToCafeData = (place: any) => {
+  return {
+    name: place.place_name,
+    address: place.road_address_name || place.address_name,
+    location: {
+      latitude: parseFloat(place.y),
+      longitude: parseFloat(place.x)
+    }
+  };
+};
