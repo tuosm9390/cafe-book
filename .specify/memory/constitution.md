@@ -1,50 +1,56 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: 1.0.0 → 1.1.0
+- List of modified principles:
+  - III. Test-Driven Development (TDD) → III. Hybrid Testing (TDD + E2E)
+  - V. Smooth Map UX (사용자 중심 지도 경험) → V. Performant & Smooth Map UX
+- Added sections: VI. Reliable Delivery (E2E 보장)
+- Templates requiring updates:
+  - ✅ updated: .specify/memory/constitution.md
+  - ✅ updated: .specify/templates/plan-template.md
+  - ✅ updated: .specify/templates/spec-template.md
+  - ✅ updated: .specify/templates/tasks-template.md
+- Follow-up TODOs: 
+  - TODO(CONVENTION): 실제 배포 파이프라인 구축 시 CD 원칙 추가 필요.
+-->
+
+# Cafe Book Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Library-First (UI 및 로직 분리)
+모든 기능은 UI 컴포넌트와 비즈니스 로직(API 호출, 데이터 변환 등)이 엄격히 분리되어야 합니다. 로직은 독립적인 유틸리티 함수나 커스텀 훅으로 작성되어 독립적인 테스트가 가능해야 하며, 특정 UI 프레임워크에 대한 의존성을 최소화합니다.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Mobile-First & Responsive (반응형 디자인)
+카페 도감은 이동 중에 사용될 가능성이 높으므로 모바일 환경의 사용성을 최우선으로 고려합니다. 모든 페이지는 모바일에서 데스크톱까지 끊김 없는 반응형 레이아웃을 제공해야 하며, 터치 인터페이스에 최적화된 UX를 설계합니다.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Hybrid Testing (TDD + E2E)
+단위 테스트와 종단 간(E2E) 테스트를 병행하여 품질을 보장합니다. 핵심 비즈니스 로직은 TDD 방식으로 구현하며, 복잡한 사용자 시나리오(예: 카페 등록 후 지도 반영)는 Playwright를 이용한 E2E 테스트로 검증합니다. 모든 주요 기능은 자동화된 테스트 없이는 완료된 것으로 간주하지 않습니다.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Data Integrity & Security (데이터 무결성 및 보안)
+사용자 데이터와 카페 정보의 무결성을 보호합니다. 모든 데이터 쓰기 작업은 Firebase 보안 규칙을 통해 인증된 사용자만 가능하도록 제한하며, 클라이언트 측 입력값 검증과 서버 측 보안 검증을 병행합니다. 민감한 API 키는 절대 코드에 노출하지 않고 환경 변수로 관리합니다.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Performant & Smooth Map UX
+지도 인터페이스는 사용자가 정보를 탐색하는 핵심 도구입니다. 10,000건 이상의 데이터에서도 0.5초 이내의 검색 성능을 유지해야 하며, 리스트 선택 시 지도는 부드럽게 이동(Smooth transition)해야 합니다. 성능 수치는 정기적인 벤치마크를 통해 검증합니다.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. Reliable Delivery (E2E 보장)
+모든 사용자 스토리는 독립적으로 테스트 가능하고 배포 가능해야 합니다. 기능 구현 후에는 반드시 `tasks.md`에 정의된 독립 테스트 기준을 통과해야 하며, 실제 환경과 유사한 조건에서 최종 검증을 수행합니다.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Security & Compliance
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- **API Key Protection**: Kakao Map 및 Firebase API 키는 `.env` 파일을 통해서만 참조하며, `.gitignore`를 통해 저장소 유출을 방지합니다.
+- **Privacy**: 사용자의 리뷰와 별점 정보는 공공의 이익을 위해 공유되나, 작성자의 식별 정보는 최소화하여 보호합니다.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow
+
+- **Speckit Workflow**: 모든 기능 개발은 `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks` -> `/speckit.implement` 순서를 준수합니다.
+- **Verification Gate**: 구현 전 `/speckit.analyze`를 통해 설계와 태스크의 일관성을 반드시 확인합니다.
+- **Commit Convention**: `feat:`, `fix:`, `docs:`, `test:`, `chore:` 등의 접두사를 사용하여 의미 있는 커밋 메시지를 작성합니다.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+이 헌법은 카페 도감 프로젝트의 모든 의사결정과 코드 구현의 최상위 가이드라인입니다. 
+1. **변경 절차**: 원칙의 추가/삭제/수정은 기술적 필요성에 대한 명확한 근거와 함께 제안되어야 합니다.
+2. **버전 관리**: Semantic Versioning을 따르며, MAJOR 변경 시 기존 설계의 전수 재검토가 필요합니다.
+3. **준수 확인**: 모든 PR 리뷰 시 헌법 원칙 위배 여부를 필수 항목으로 체크합니다.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.1.0 | **Ratified**: 2026-03-19 | **Last Amended**: 2026-03-19
