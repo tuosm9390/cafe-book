@@ -6,7 +6,9 @@ dist/
 .DS_Store
 .vscode/
 .idea/coverage/
-/.gemini
-/.specify
-/specs
-/doc
+
+# Tools & Documentation (Local only)
+/.gemini/
+/.specify/
+/doc/
+/specs/
