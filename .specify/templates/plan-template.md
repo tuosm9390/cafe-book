@@ -27,6 +27,7 @@
 - [ ] **III. Hybrid Testing**: TDD + E2E scenarios identified?
 - [ ] **IV. Data Security**: Firebase Rules & Env vars managed?
 - [ ] **V. Performance**: 0.5s search goal respected?
+- [ ] **VII. Compliance**: SDK Integrity & Security Headers (COOP/COEP) addressed?
 
 ## Project Structure
 

@@ -1,17 +1,16 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.1.0
+- Version change: 1.1.0 → 1.2.0
 - List of modified principles:
-  - III. Test-Driven Development (TDD) → III. Hybrid Testing (TDD + E2E)
-  - V. Smooth Map UX (사용자 중심 지도 경험) → V. Performant & Smooth Map UX
-- Added sections: VI. Reliable Delivery (E2E 보장)
+  - Added: VII. Infrastructure & Security Compliance (보안 정책 및 리소스 무결성)
+- Added sections: VII. Infrastructure & Security Compliance
 - Templates requiring updates:
   - ✅ updated: .specify/memory/constitution.md
   - ✅ updated: .specify/templates/plan-template.md
   - ✅ updated: .specify/templates/spec-template.md
   - ✅ updated: .specify/templates/tasks-template.md
 - Follow-up TODOs: 
-  - TODO(CONVENTION): 실제 배포 파이프라인 구축 시 CD 원칙 추가 필요.
+  - TODO(SECURITY): 향후 CSP(Content Security Policy) 세부 규칙 추가 검토 필요.
 -->
 
 # Cafe Book Constitution
@@ -36,6 +35,9 @@ Sync Impact Report
 ### VI. Reliable Delivery (E2E 보장)
 모든 사용자 스토리는 독립적으로 테스트 가능하고 배포 가능해야 합니다. 기능 구현 후에는 반드시 `tasks.md`에 정의된 독립 테스트 기준을 통과해야 하며, 실제 환경과 유사한 조건에서 최종 검증을 수행합니다.
 
+### VII. Infrastructure & Security Compliance (보안 정책 및 리소스 무결성)
+외부 리소스(SDK, 라이브러리) 로드 시 반드시 SRI(Subresource Integrity)를 사용하여 무결성을 검증해야 합니다. 또한, 최신 브라우저의 보안 정책(예: COOP, COEP)을 준수하여 팝업 기반 인증 등이 차단되지 않도록 서버 및 개발 환경 설정을 유지해야 합니다.
+
 ## Security & Compliance
 
 - **API Key Protection**: Kakao Map 및 Firebase API 키는 `.env` 파일을 통해서만 참조하며, `.gitignore`를 통해 저장소 유출을 방지합니다.
@@ -53,4 +55,4 @@ Sync Impact Report
 2. **버전 관리**: Semantic Versioning을 따르며, MAJOR 변경 시 기존 설계의 전수 재검토가 필요합니다.
 3. **준수 확인**: 모든 PR 리뷰 시 헌법 원칙 위배 여부를 필수 항목으로 체크합니다.
 
-**Version**: 1.1.0 | **Ratified**: 2026-03-19 | **Last Amended**: 2026-03-19
+**Version**: 1.2.0 | **Ratified**: 2026-03-19 | **Last Amended**: 2026-03-19
