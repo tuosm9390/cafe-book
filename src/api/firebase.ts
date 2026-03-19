@@ -16,21 +16,39 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // 2. Firestore 초기화 설정 (롱 폴링 강제 - 네트워크 차단 환경 대응 핵심)
 const databaseId = import.meta.env.VITE_FIRESTORE_DATABASE_ID || '(default)';
-const db = initializeFirestore(app, {
+let db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 }, databaseId);
 
 const auth = getAuth(app);
 
-// 3. 기존 오프라인 데이터 및 캐시 강제 삭제 (연결 꼬임 및 오프라인 고착 방지)
+// 3. 자가 치유(Self-healing) 로직 및 래퍼 (Constitution IX 준수)
+let failureCount = 0;
+const FAILURE_THRESHOLD = 3;
+
 const resetFirestore = async () => {
   try {
+    console.log('[Firebase] 자가 치유 프로세스 시작: Firestore 캐시 및 연결 초기화 중...');
     await terminate(db);
     await clearIndexedDbPersistence(db);
-    console.log('[Firebase] Firestore 캐시 및 연결 초기화 완료. 페이지를 새로고침하세요.');
+    console.log('[Firebase] 초기화 완료. 페이지를 새로고침합니다.');
     window.location.reload();
   } catch (err) {
     console.warn('[Firebase] 초기화 과정 중 경고:', err);
+  }
+};
+
+/**
+ * 에러 발생 시 실패 횟수를 기록하고 임계치 도달 시 자동 복구를 시도합니다.
+ */
+export const handleFirestoreError = (error: any) => {
+  if (error.code === 'unavailable' || error.code === 'failed-precondition') {
+    failureCount++;
+    console.warn(`[Firebase] Firestore 연결 오류 감지 (${failureCount}/${FAILURE_THRESHOLD}):`, error.message);
+    
+    if (failureCount >= FAILURE_THRESHOLD) {
+      resetFirestore();
+    }
   }
 };
 

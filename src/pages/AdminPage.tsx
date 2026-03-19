@@ -7,7 +7,7 @@ import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { loadKakaoMapSDK } from "../utils/mapLoader";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, auth } from "../api/firebase";
+import { db, auth, handleFirestoreError } from "../api/firebase";
 
 const AdminPage: React.FC = () => {
   const { cafes, loading, refresh } = useCafes();
@@ -15,6 +15,21 @@ const AdminPage: React.FC = () => {
   const [editingCafe, setEditingCafe] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
+  const loadStartTime = React.useRef<number | null>(null);
+
+  // 데이터 로딩 시간 측정 (SC-002 검증)
+  useEffect(() => {
+    if (loading) {
+      loadStartTime.current = performance.now();
+    } else if (!loading && loadStartTime.current !== null) {
+      const loadTime = (performance.now() - loadStartTime.current) / 1000;
+      console.log(`[AdminPage] 데이터 로딩 완료: ${loadTime.toFixed(2)}초`);
+      if (loadTime > 2.0) {
+        console.warn(`[AdminPage] 경고: 로딩 시간이 목표치(2.0초)를 초과했습니다.`);
+      }
+      loadStartTime.current = null;
+    }
+  }, [loading]);
 
   const handleLogout = async () => {
     try {
@@ -47,6 +62,7 @@ const AdminPage: React.FC = () => {
           }
         } catch (err) {
           console.error("[AdminPage] 권한 확인 중 치명적 오류 (네트워크 차단 의심):", err);
+          handleFirestoreError(err);
         }
       }
     };

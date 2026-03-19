@@ -56,6 +56,14 @@
 
 ---
 
+---
+
+## Phase 7: 분석 결과 반영 및 품질 보완 (Remediation)
+
+- [x] T017 `research.md`의 `VITE_FIRESTORE_DATABASE_ID` 사용 배경을 `spec.md` 및 `plan.md`에 동기화
+- [x] T018 `AdminPage.tsx`에서 데이터 로딩 시간 측정 로직 구현 및 SC-002(2.0초 이내) 검증
+- [x] T019 [Constitution IX] `getSafeFirestore` 래퍼를 통한 자동 자가 치유(Self-healing) 로직 최종 검증
+
 ## Phase 5: Polish & Cross-Cutting Concerns
 
 - [x] T011 [P] `quickstart.md` 가이드 내용과 실제 구현 코드의 설정값 일치 여부 최종 확인

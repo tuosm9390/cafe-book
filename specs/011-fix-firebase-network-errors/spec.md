@@ -1,63 +1,35 @@
-# Feature Specification: Firebase 설정 오류 수정 및 네트워크 안정성 확보
+# Feature Specification: Firebase Firestore 네트워크 에러 수정 및 자가 치유
+**Feature Branch**: `011-fix-firebase-network-errors`
+**Status**: Draft (Remediated)
+**Created**: 2026-03-19
 
-**Feature Branch**: `011-fix-firebase-network-errors`  
-**Created**: 2026-03-19 16:30:00  
-**Status**: Draft  
-**Input**: User description: "@src/api/firebase.ts 파일에서 FirestoreSettings 타입에 존재하지 않는 useFetchStreams 속성 에러 수정 및 어드민 페이지 오프라인 오류(네트워크 차단 의심) 해결"
-
-## User Scenarios & Testing *(mandatory)*
-
-### User Story 1 - 안정적인 관리자 페이지 접근 (Priority: P1)
-
-관리자는 어드민 페이지 접속 시 "client is offline" 에러 없이 실시간으로 데이터를 불러오고 권한을 확인할 수 있어야 합니다.
-
-**Why this priority**: 관리자 기능은 서비스 운영의 핵심이며, 데이터 조작이 불가능한 상태는 치명적인 결함입니다.
-
-**Independent Test**: 어드민 페이지 접속 시 네트워크 탭에서 Firestore Listen 채널이 성공적으로 확립되는지 확인하고, 콘솔에 "client is offline" 에러가 발생하지 않는지 검증합니다.
-
+## User Scenarios & Testing
+### User Story 1 - 네트워크 차단 환경에서의 관리자 접속 (Priority: P1)
+**Scenario**: 기업 방화벽 등으로 인해 gRPC 스트림이 차단된 환경에서 관리자가 접속함.
 **Acceptance Scenarios**:
+1. **Given** gRPC 포트가 차단된 네트워크 환경에서, **When** 관리자 페이지에 진입하면, **Then** Firestore는 자동으로 HTTP Long Polling 모드로 동작하여 데이터를 로드해야 함.
 
-1. **Given** 인터넷이 연결된 환경에서, **When** 관리자 페이지(/admin)를 새로고침하면, **Then** Firestore로부터 사용자 권한 정보를 성공적으로 가져와 화면이 렌더링된다.
-2. **Given** 관리자 페이지 로드 후, **When** 네트워크 요청이 발생하면, **Then** 무한 루프나 반복적인 terminate 요청 없이 단일 채널이 유지된다.
-
----
-
-### User Story 2 - 정확한 Firebase SDK 초기화 (Priority: P1)
-
-개발자는 컴파일 에러 없이 최신 Firebase SDK 가이드라인에 맞는 설정을 적용하여 시스템을 빌드할 수 있어야 합니다.
-
-**Why this priority**: 타입 에러가 있는 코드는 안정적인 빌드와 배포를 방해하며, 잘못된 설정은 예기치 못한 런타임 동작을 유발합니다.
-
-**Independent Test**: `src/api/firebase.ts` 파일에서 TypeScript 타입 에러가 발생하지 않는지 확인하고, 빌드 명령(`npm run build`)이 성공적으로 수행되는지 검증합니다.
-
+### User Story 2 - 오프라인 고착 현상 자가 치유 (Priority: P1)
+**Scenario**: 로컬 캐시 오염으로 인해 네트워크 연결 후에도 "client is offline" 상태가 지속됨.
 **Acceptance Scenarios**:
-
-1. **Given** `firebase.ts` 파일을 열었을 때, **When** Firestore 초기화 코드를 확인하면, **Then** `FirestoreSettings` 타입에 정의되지 않은 속성(`useFetchStreams` 등)이 제거되어 있고 타입 에러가 없다.
-
----
+1. **Given** "client is offline" 에러가 3회 연속 발생하거나 15초 이상 지속될 때, **When** 시스템이 이를 감지하면, **Then** 사용자 개입 없이 자동으로 로컬 캐시를 초기화(`clearIndexedDbPersistence`)하고 재연결을 시도해야 함. [Constitution IX 준수]
+2. **Given** 자가 치유 로직이 실행될 때, **When** 프로세스가 진행 중이면, **Then** 사용자에게 "네트워크 연결을 최적화하고 있습니다. 잠시만 기다려 주세요..."라는 안내 메시지와 함께 로딩 스피너를 표시해야 함. [CHK003 해결]
 
 ### Edge Cases
+- **네트워크 복구 직후**: 자가 치유 로직 실행 중 네트워크가 실제 복구되었음을 감지하면, 불필요한 캐시 초기화 대신 즉시 실시간 리스너를 재확립함. [CHK008 관련]
+- **쓰기 작업 중단**: 캐시 초기화 시 전송 대기 중인 데이터(Pending writes)가 있다면, 삭제 전 경고창을 띄워 사용자에게 데이터 유실 가능성을 알리고 확인을 받음.
 
-- 프록시나 방화벽이 있는 환경에서의 gRPC 스트림 차단 대응 (Long Polling 강제 설정의 유효성 검증).
-- Firebase 프로젝트 ID가 `.env`와 일치하지 않을 경우의 명확한 에러 핸들링.
-
-## Requirements *(mandatory)*
-
+## Requirements
 ### Functional Requirements
+- **FR-001**: 최신 Firebase SDK v10 규격에 따라 `useFetchStreams`를 제거하고 `initializeFirestore`를 사용해야 함.
+- **FR-002**: 특정 네트워크 차단 환경을 우회하기 위해 `experimentalForceLongPolling: true` 설정을 강제함.
+- **FR-003**: Firestore 연결 상태를 모니터링하고, 지속적인 오프라인 에러 발생 시 자동으로 복구 로직(Terminate -> Clear -> Re-init)을 트리거하는 자가 치유(Self-healing) 레이어를 구현함.
 
-- **FR-001**: `src/api/firebase.ts`에서 `useFetchStreams` 속성을 제거하고, 현재 SDK 버전(v10.13.0+)에서 지원하는 표준 설정으로 대체해야 한다.
-- **FR-002**: Firestore 클라이언트가 온라인 상태를 즉시 감지할 수 있도록 네트워크 프로토콜(HTTP/2 vs Long Polling) 설정을 재검토해야 한다.
-- **FR-003**: `AdminPage.tsx`에서 발생하는 오프라인 에러를 방어하기 위해 데이터 호출 전 연결 상태 확인 로직을 보강해야 한다.
+### Technical Constraints
+- **TC-001**: 멀티 DB 환경 지원을 위해 `VITE_FIRESTORE_DATABASE_ID` 환경 변수가 반드시 정의되어야 함.
 
-### Key Entities
-
-- **Firestore Client**: Firebase 서버와 데이터를 주고받는 통신 주체.
-- **Settings Object**: Firestore 행동을 정의하는 설정값 집합.
-
-## Success Criteria *(mandatory)*
-
+## Success Criteria
 ### Measurable Outcomes
-
-- **SC-001**: `src/api/firebase.ts` 내 TypeScript 타입 에러 0건.
-- **SC-002**: 관리자 페이지 로드 시 "Failed to get document because the client is offline" 에러 재발 방지 (성공률 100%).
-- **SC-003**: 네트워크 탭에서의 Firestore 연동 지연 시간 2초 이내.
+- **SC-001**: 빌드 및 런타임 시 `FirestoreSettings` 타입 에러가 발생하지 않음.
+- **SC-002**: 관리자 페이지 데이터 로딩 시간이 네트워크 장애 상황을 제외하고 2.0초 이내여야 함.
+- **SC-003**: 네트워크 복구 후 자가 치유 로직이 1회 이내의 재시도로 연결을 정상화함.

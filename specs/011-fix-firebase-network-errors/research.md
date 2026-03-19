@@ -14,6 +14,7 @@
 
 ### 1. 최신 Firebase SDK (v10.13.0+) Firestore 설정값 조사
 - **결과**: `useFetchStreams`는 더 이상 사용되지 않음. 네트워크 제어는 `forceLongPolling`으로 충분함.
+- **추가 사항**: 멀티 데이터베이스 환경 대응 및 명시적 인스턴스 관리를 위해 `VITE_FIRESTORE_DATABASE_ID` 환경 변수를 도입함. 이는 `initializeFirestore` 호출 시 정확한 대상 DB를 지정하는 데 사용됨.
 
 ### 2. "client is offline" 에러와 네트워크 무한 요청 관계 분석
 - **원인**: gRPC 연결 시도 -> 실패 -> 재시도 루프 발생. 이 과정에서 클라이언트는 서버와 완전히 연결되지 않은 것으로 간주함.
