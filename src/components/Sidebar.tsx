@@ -1,7 +1,8 @@
 import React from "react";
 import { Cafe } from "../types";
 import CafeListItem from "./CafeListItem";
-import { Search } from "lucide-react";
+import { Search, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   cafes: Cafe[];
@@ -20,6 +21,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onCafeClick,
   userId,
 }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
@@ -52,6 +55,16 @@ const Sidebar: React.FC<SidebarProps> = ({
             검색 결과가 없습니다.
           </div>
         )}
+      </div>
+
+      <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <button
+          onClick={() => navigate("/admin")}
+          className="flex items-center justify-center w-full px-3 py-2 text-xs font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors border border-gray-300"
+        >
+          <Settings size={14} className="mr-2" />
+          관리페이지
+        </button>
       </div>
     </div>
   );

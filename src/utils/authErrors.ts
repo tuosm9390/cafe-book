@@ -1,4 +1,4 @@
-import { logFirebaseSetupGuide } from '../api/firebase';
+// import { logFirebaseSetupGuide } from '../api/firebase';
 
 export const getAuthErrorMessage = (error: any): string => {
   if (typeof error === 'string') return error;
@@ -6,10 +6,10 @@ export const getAuthErrorMessage = (error: any): string => {
 
   const errorCode = error?.code;
   
-  if (errorCode === 'auth/configuration-not-found') {
-    logFirebaseSetupGuide();
-    return '인증 서버 설정이 잘못되었습니다. 관리자에게 문의하세요.';
-  }
+  // if (errorCode === 'auth/configuration-not-found') {
+  //   logFirebaseSetupGuide();
+  //   return '인증 서버 설정이 잘못되었습니다. 관리자에게 문의하세요.';
+  // }
 
   switch (errorCode) {
     case 'auth/popup-closed-by-user':

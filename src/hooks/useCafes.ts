@@ -22,7 +22,15 @@ export const useCafes = () => {
   };
 
   useEffect(() => {
-    fetchCafes();
+    let isMounted = true;
+    
+    if (isMounted) {
+      fetchCafes();
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filteredCafes = useMemo(() => {

@@ -33,4 +33,22 @@ test.describe('지도 내비게이션 테스트', () => {
       expect(text).toContain('스타벅스');
     }
   });
+
+  test('관리 페이지 이동 및 메인 페이지 복귀가 가능해야 함', async ({ page }) => {
+    // 사이드바 하단의 관리 페이지 버튼 클릭
+    const adminButton = page.locator('button:has-text("관리페이지")');
+    await adminButton.click();
+
+    // 관리 페이지로 이동했는지 확인
+    await expect(page).toHaveURL(/\/admin/);
+    await expect(page.locator('h1')).toContainText('카페 데이터 관리');
+
+    // "지도 돌아가기" 버튼 클릭
+    const backButton = page.locator('button:has-text("지도 돌아가기")');
+    await backButton.click();
+
+    // 메인 페이지로 복귀했는지 확인
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('h1')).toContainText('카페 도감');
+  });
 });
