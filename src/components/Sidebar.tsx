@@ -1,7 +1,7 @@
-import React from 'react';
-import { Cafe } from '../types';
-import CafeListItem from './CafeListItem';
-import { Search } from 'lucide-react';
+import React from "react";
+import { Cafe } from "../types";
+import CafeListItem from "./CafeListItem";
+import { Search } from "lucide-react";
 
 interface SidebarProps {
   cafes: Cafe[];
@@ -12,13 +12,13 @@ interface SidebarProps {
   userId?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  cafes, 
-  searchTerm, 
-  onSearchChange, 
+const Sidebar: React.FC<SidebarProps> = ({
+  cafes,
+  searchTerm,
+  onSearchChange,
   selectedCafeId,
   onCafeClick,
-  userId
+  userId,
 }) => {
   return (
     <div className="flex flex-col h-full">

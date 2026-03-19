@@ -21,7 +21,7 @@
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - [x] **I. Library-First**: UI 컴포넌트와 비즈니스 로직(Firebase 연동)을 분리하여 설계.
 - [x] **II. CLI Interface**: (N/A) 웹 애플리케이션이므로 브라우저 인터페이스 중심.
@@ -64,5 +64,5 @@ tests/
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| - | - | - |
+| --------- | ---------- | ------------------------------------ |
+| -         | -          | -                                    |
