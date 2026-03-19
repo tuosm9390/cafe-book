@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, MapMarker } from 'react-kakao-maps-sdk';
+import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import { Cafe } from '../types';
 
 interface MapContainerProps {
@@ -9,6 +9,11 @@ interface MapContainerProps {
 }
 
 const MapContainer: React.FC<MapContainerProps> = ({ cafes, selectedCafe, onMarkerClick }) => {
+  useKakaoLoader({
+    appkey: import.meta.env.VITE_KAKAO_MAP_API_KEY,
+    libraries: ['services', 'clusterer', 'drawing'],
+  });
+
   // 기본 중심 위치 (서울역 부근)
   const defaultCenter = { lat: 37.5559, lng: 126.9723 };
 

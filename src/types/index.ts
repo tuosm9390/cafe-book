@@ -24,5 +24,15 @@ export interface Interaction {
 export interface User {
   uid: string;
   email: string | null;
-  role: 'admin' | 'user';
+  displayName: string | null;
+  photoURL: string | null;
+  provider: 'google' | 'kakao' | 'email';
+  createdAt: any;
+  lastLoginAt: any;
+}
+
+export interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
 }
