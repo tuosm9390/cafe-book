@@ -20,7 +20,7 @@
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - [ ] **I. Library-First**: Logic separated from UI components?
 - [ ] **II. Mobile-First**: Responsive layout planned?
@@ -28,6 +28,7 @@
 - [ ] **IV. Data Security**: Firebase Rules & Env vars managed?
 - [ ] **V. Performance**: 0.5s search goal respected?
 - [ ] **VII. Compliance**: SDK Integrity & Security Headers (COOP/COEP) addressed?
+- [ ] **VIII. Consistent Layout & Feedback**: Layout guidelines & loading feedback planned?
 
 ## Project Structure
 

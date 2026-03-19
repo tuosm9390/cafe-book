@@ -45,6 +45,7 @@
 ## Phase N: Polish & Cross-Cutting Concerns
 
 - [ ] TXXX [P] Responsive design audit
+- [ ] TXXX [P] Visual feedback (loading states, error messages) verification per Principle VIII
 - [ ] TXXX Security & Firebase Rules verification
 - [ ] TXXX SDK Integrity & Security Header (COOP/COEP) compliance check
 - [ ] TXXX Final performance benchmark

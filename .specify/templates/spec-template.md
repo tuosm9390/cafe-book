@@ -50,3 +50,4 @@
 
 - **SC-001**: [Performance metric, e.g., "Search results appear in < 0.5s"]
 - **SC-002**: [User goal, e.g., "User can complete review in 3 steps"]
+- **SC-003**: [Visual Feedback, e.g., "Loading spinner displays during data fetch"]

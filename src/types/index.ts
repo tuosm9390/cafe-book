@@ -38,3 +38,10 @@ export interface AuthState {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface GeolocationState {
+  latitude: number;
+  longitude: number;
+  error: string | null;
+  isLoading: boolean;
+}
