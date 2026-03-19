@@ -8,6 +8,7 @@ Auto-generated from all feature plans. Last updated: 2026-03-19
 - TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+ (003-fix-auth-and-sdk-errors)
 - TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Kakao SDK (004-fix-social-auth)
 - Firebase Firestore, Firebase Auth (004-fix-social-auth)
+- TypeScript 5.x, Node.js 20.x + React 18.3.1, react-kakao-maps-sdk 1.1.27, Firebase SDK 10.13.0, Tailwind CSS 3.4.10 (005-fix-map-initialization)
 
 - **Language**: TypeScript 5.x, Node.js 20.x
 - **Frameworks**: React 18+, react-kakao-maps-sdk
@@ -46,9 +47,9 @@ tests/
 - **Firebase**: SDK v10+ 모듈형 스타일(Functional/Modular) 사용.
 
 ## Recent Changes
+- 005-fix-map-initialization: Added TypeScript 5.x, Node.js 20.x + React 18.3.1, react-kakao-maps-sdk 1.1.27, Firebase SDK 10.13.0, Tailwind CSS 3.4.10
 - 004-fix-social-auth: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Kakao SDK
 - 003-fix-auth-and-sdk-errors: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+
-- 002-social-auth-integration: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Tailwind CSS, Lucide React (icons), React Router v6
 
 
 <!-- MANUAL ADDITIONS START -->

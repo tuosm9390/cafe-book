@@ -6,23 +6,21 @@ interface MapContainerProps {
   cafes: Cafe[];
   selectedCafe: Cafe | null;
   onMarkerClick: (cafe: Cafe) => void;
+  center: { lat: number; lng: number };
 }
 
-const MapContainer: React.FC<MapContainerProps> = ({ cafes, selectedCafe, onMarkerClick }) => {
-  // 기본 중심 위치 (서울역 부근)
-  const defaultCenter = { lat: 37.5559, lng: 126.9723 };
-
-  // 선택된 카페가 있으면 해당 위치를 중심으루, 없으면 기본값
+const MapContainer: React.FC<MapContainerProps> = ({ cafes, selectedCafe, onMarkerClick, center: initialCenter }) => {
+  // 선택된 카페가 있으면 해당 위치를 중심으루, 없으면 초기 중심값(사용자 위치 또는 기본값)
   const center = selectedCafe 
     ? { lat: selectedCafe.location.latitude, lng: selectedCafe.location.longitude }
-    : defaultCenter;
+    : initialCenter;
 
   return (
     <Map
       center={center}
       isPanto={true}
       style={{ width: '100%', height: '100%' }}
-      level={3}
+      level={5}
     >
       {cafes.map((cafe) => (
         <MapMarker
