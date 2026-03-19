@@ -7,9 +7,10 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { subscribeAuth } from "../api/auth";
 import { User } from "../types";
 import { loadKakaoMapSDK } from "../utils/mapLoader";
+import { Loader2 } from "lucide-react";
 
 const MapPage: React.FC = () => {
-  const { cafes, searchTerm, setSearchTerm, selectedCafe, setSelectedCafe } =
+  const { cafes, searchTerm, setSearchTerm, selectedCafe, setSelectedCafe, loading } =
     useCafes();
   const { latitude, longitude, isLoading: isLocating } = useGeolocation();
 
@@ -31,6 +32,7 @@ const MapPage: React.FC = () => {
       sidebar={
         <Sidebar
           cafes={cafes}
+          loading={loading}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           selectedCafeId={selectedCafe?.id}
@@ -42,10 +44,10 @@ const MapPage: React.FC = () => {
       {isMapLoaded ? (
         <>
           {isLocating && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/50 backdrop-blur-sm">
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/50 backdrop-blur-sm">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-600 font-medium">현재 위치를 찾는 중입니다...</p>
+                <Loader2 className="animate-spin h-12 w-12 text-primary mx-auto mb-4" />
+                <p className="text-foreground font-medium">현재 위치를 찾는 중입니다...</p>
               </div>
             </div>
           )}
@@ -57,10 +59,10 @@ const MapPage: React.FC = () => {
           />
         </>
       ) : (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center h-full bg-background">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">지도를 불러오는 중입니다...</p>
+            <Loader2 className="animate-spin h-12 w-12 text-primary mx-auto mb-4" />
+            <p className="text-muted-foreground">지도를 불러오는 중입니다...</p>
           </div>
         </div>
       )}
