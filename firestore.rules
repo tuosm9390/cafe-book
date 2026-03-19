@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 관리자 확인 함수
+    function isAdmin() {
+      return request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == 'admin@cafebook.com'); // 초기 관리자 예시
+    }
+
+    // 카페 정보: 누구나 읽기 가능, 관리자만 쓰기 가능
+    match /cafes/{cafeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 상호작용(리뷰): 누구나 읽기 가능, 인증된 사용자만 자신의 것 쓰기 가능
+    match /interactions/{interactionId} {
+      allow read: if true;
+      allow write: if request.auth != null && interactionId.startsWith(request.auth.uid);
+    }
+
+    // 사용자 정보: 본인 또는 관리자만 접근 가능
+    match /users/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}
