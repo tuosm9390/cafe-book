@@ -1,0 +1,9 @@
+{
+  "firestore": [
+    {
+      "database": "cafe-book",
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    }
+  ]
+}

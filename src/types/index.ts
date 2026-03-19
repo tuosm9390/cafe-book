@@ -45,3 +45,9 @@ export interface GeolocationState {
   error: string | null;
   isLoading: boolean;
 }
+
+export const KAKAO_MAP_STATUS = {
+  OK: 'OK',
+  ZERO_RESULT: 'ZERO_RESULT',
+  ERROR: 'ERROR',
+} as const;

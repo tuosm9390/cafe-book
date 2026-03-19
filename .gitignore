@@ -12,3 +12,5 @@ dist/
 /.specify/
 /doc/
 /specs/
+/.claude/
+/.omc
