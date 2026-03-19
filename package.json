@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && prisma generate",
     "preview": "vite preview",
     "test:unit": "vitest run",
     "test:e2e": "playwright test"
