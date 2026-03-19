@@ -5,6 +5,7 @@ import { SocialLoginButtons } from "../components/SocialLoginButtons";
 
 const LoginPage: React.FC = () => {
   const [isSignupMode, setIsSignupMode] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -13,6 +14,15 @@ const LoginPage: React.FC = () => {
       navigate("/");
     }
   }, [user, navigate]);
+
+  const handleAuthSuccess = () => {
+    setAuthError(null);
+    navigate("/");
+  };
+
+  const handleAuthError = (message: string) => {
+    setAuthError(message);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -41,8 +51,19 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
 
+          {authError && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm">
+              <p className="font-bold">인증 오류</p>
+              <p>{authError}</p>
+            </div>
+          )}
+
           <div className="space-y-4">
-            <SocialLoginButtons isSignupMode={isSignupMode} />
+            <SocialLoginButtons 
+              isSignupMode={isSignupMode} 
+              onSuccess={handleAuthSuccess}
+              onError={handleAuthError}
+            />
 
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
@@ -56,7 +77,10 @@ const LoginPage: React.FC = () => {
             </div>
 
             <button
-              onClick={() => setIsSignupMode(!isSignupMode)}
+              onClick={() => {
+                setIsSignupMode(!isSignupMode);
+                setAuthError(null);
+              }}
               className="w-full py-3 px-4 rounded-xl border-2 border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-all duration-200"
             >
               {isSignupMode ? "기존 계정으로 로그인" : "회원가입"}

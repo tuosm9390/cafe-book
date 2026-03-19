@@ -21,12 +21,14 @@ export interface Interaction {
   updatedAt: any;
 }
 
+export type AuthProvider = 'google' | 'kakao' | 'email';
+
 export interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  provider: 'google' | 'kakao' | 'email';
+  provider: AuthProvider;
   createdAt: any;
   lastLoginAt: any;
 }

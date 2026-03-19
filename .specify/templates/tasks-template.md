@@ -46,4 +46,5 @@
 
 - [ ] TXXX [P] Responsive design audit
 - [ ] TXXX Security & Firebase Rules verification
+- [ ] TXXX SDK Integrity & Security Header (COOP/COEP) compliance check
 - [ ] TXXX Final performance benchmark

@@ -6,6 +6,8 @@ Auto-generated from all feature plans. Last updated: 2026-03-19
 - TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Tailwind CSS, Lucide React (icons), React Router v6 (002-social-auth-integration)
 - Firebase Auth, Firestore (User Profile) (002-social-auth-integration)
 - TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+ (003-fix-auth-and-sdk-errors)
+- TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Kakao SDK (004-fix-social-auth)
+- Firebase Firestore, Firebase Auth (004-fix-social-auth)
 
 - **Language**: TypeScript 5.x, Node.js 20.x
 - **Frameworks**: React 18+, react-kakao-maps-sdk
@@ -44,10 +46,10 @@ tests/
 - **Firebase**: SDK v10+ 모듈형 스타일(Functional/Modular) 사용.
 
 ## Recent Changes
+- 004-fix-social-auth: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Kakao SDK
 - 003-fix-auth-and-sdk-errors: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+
 - 002-social-auth-integration: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Tailwind CSS, Lucide React (icons), React Router v6
 
-- **001-cafe-map-admin**: 카카오맵 기반 지도 페이지 및 Firebase 연동 관리 페이지 초기 기능 설계 완료.
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
