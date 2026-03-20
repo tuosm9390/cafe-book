@@ -2,6 +2,7 @@ export interface Cafe {
   id: string;
   name: string;
   address: string;
+  images?: string[];
   location: {
     latitude: number;
     longitude: number;

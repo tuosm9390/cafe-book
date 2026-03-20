@@ -6,10 +6,10 @@ export const getAuthErrorMessage = (error: any): string => {
 
   const errorCode = error?.code;
   
-  // if (errorCode === 'auth/configuration-not-found') {
-  //   logFirebaseSetupGuide();
-  //   return '인증 서버 설정이 잘못되었습니다. 관리자에게 문의하세요.';
-  // }
+  if (errorCode === 'auth/configuration-not-found') {
+    // logFirebaseSetupGuide();
+    return '인증 서버 설정이 잘못되었습니다. 관리자에게 문의하세요.';
+  }
 
   switch (errorCode) {
     case 'auth/popup-closed-by-user':
@@ -25,3 +25,4 @@ export const getAuthErrorMessage = (error: any): string => {
       return '로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
   }
 };
+

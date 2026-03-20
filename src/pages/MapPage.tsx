@@ -56,6 +56,7 @@ const MapPage: React.FC = () => {
             selectedCafe={selectedCafe}
             onMarkerClick={setSelectedCafe}
             center={{ lat: latitude, lng: longitude }}
+            userId={user?.uid}
           />
         </>
       ) : (

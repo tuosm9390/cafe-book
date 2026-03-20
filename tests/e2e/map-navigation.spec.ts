@@ -16,8 +16,29 @@ test.describe('지도 내비게이션 테스트', () => {
     await expect(mapContainer).toBeVisible();
     
     // 리스트 아이템이 선택된 상태(배경색 등)인지 확인
-    const selectedItem = page.locator('.bg-white');
+    const selectedItem = page.locator('.bg-accent');
     await expect(selectedItem).toContainText(cafeName);
+  });
+
+  test('카페 선택 시 지도에 상세 정보 패널이 노출되어야 함', async ({ page }) => {
+    // 첫 번째 카페 아이템 클릭 (마커 클릭과 동일한 상태 변화 유발)
+    const firstCafe = page.locator('h3').first();
+    const cafeName = await firstCafe.innerText();
+    await firstCafe.click();
+
+    // CafeInfoPanel 노출 확인 (CustomOverlayMap 내부에 렌더링됨)
+    // 패널 내부에 해당 카페 이름이 렌더링되는지 확인
+    const infoPanel = page.locator('.relative.z-10.animate-in');
+    await expect(infoPanel).toBeVisible();
+    await expect(infoPanel.locator('h3')).toContainText(cafeName);
+    
+    // 주소 정보 텍스트 확인
+    const addressSection = infoPanel.locator('div:has(svg.lucide-map-pin)');
+    await expect(addressSection).toBeVisible();
+
+    // 이미지 로딩 또는 없다는 텍스트 확인 (API 통신 시간에 따라 달라질 수 있으므로 둘 중 하나 보이면 통과)
+    const imageArea = infoPanel.locator('.bg-gray-50');
+    await expect(imageArea).toBeVisible();
   });
 
   test('검색 필터링이 정상 작동해야 함', async ({ page }) => {

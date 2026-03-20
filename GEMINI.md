@@ -49,9 +49,9 @@ tests/
 - **Firebase**: SDK v10+ 모듈형 스타일(Functional/Modular) 사용.
 
 ## Recent Changes
+- 014-cafe-info-interaction: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
 - 013-fix-import-alias: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
 - 012-shadcn-cafe-theme-update: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
-- 011-fix-firebase-network-errors: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10.13.0+
 
 
 <!-- MANUAL ADDITIONS START -->

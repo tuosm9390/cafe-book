@@ -66,3 +66,29 @@ export const deleteCafe = async (id: string) => {
     '카페 정보를 삭제하는 중 시간이 초과되었습니다. 다시 시도해 주세요.'
   );
 };
+
+export const searchCafeImages = async (cafeName: string): Promise<string[]> => {
+  const apiKey = import.meta.env.VITE_KAKAO_REST_API_KEY || import.meta.env.VITE_KAKAO_MAP_API_KEY;
+  if (!apiKey || apiKey === 'your_kakao_javascript_api_key') return [];
+
+  try {
+    const response = await fetch(
+      `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(cafeName)}&size=5`,
+      {
+        headers: {
+          Authorization: `KakaoAK ${apiKey}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch images from Kakao');
+    }
+
+    const data = await response.json();
+    return data.documents.map((doc: any) => doc.image_url);
+  } catch (error) {
+    console.error('Error fetching cafe images:', error);
+    return [];
+  }
+};
