@@ -29,8 +29,12 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-background">
       {/* 배경 영역 (2/3) */}
-      <div className="hidden md:flex md:w-2/3 bg-primary items-center justify-center p-12 text-primary-foreground">
-        <div className="max-w-lg text-center">
+      <div
+        className="hidden md:flex md:w-2/3 items-center justify-center p-12 relative overflow-hidden"
+        style={{ backgroundImage: "url('/images/coff-pedia-thumbnail.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-10 max-w-lg text-center text-white">
           <h1 className="text-5xl font-bold mb-6">나만의 카페 도감</h1>
           <p className="text-xl opacity-90">
             당신의 특별한 카페 경험을 기록하고 관리하세요. <br />

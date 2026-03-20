@@ -13,7 +13,7 @@ service cloud.firestore {
     match /cafes/{cafeId} {
       allow read: if true;
       allow create, delete: if isAdmin();
-      allow update: if isAdmin() || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['imageUrl', 'averageRating', 'totalRatings', 'favoriteCount']);
+      allow update: if isAdmin() || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['imageUrl', 'averageRating', 'totalRatings', 'favoriteCount', 'updatedAt']);
     }
 
     // 상호작용(리뷰): 누구나 읽기 가능, 인증된 사용자만 자신의 것 쓰기 가능

@@ -1,14 +1,15 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  query, 
-  orderBy,
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
   serverTimestamp,
-  Timestamp
+  deleteField,
+  writeBatch
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Cafe } from '../types';
@@ -77,6 +78,23 @@ export const updateCafeImageUrl = async (id: string, imageUrl: string) => {
     10000,
     '카페 이미지 URL을 업데이트하는 중 시간이 초과되었습니다.'
   );
+};
+
+export const resetDefaultImageUrls = async (): Promise<number> => {
+  const q = query(collection(db, COLLECTION_NAME), where('imageUrl', '==', 'DEFAULT'));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) return 0;
+
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((docSnap) => {
+    batch.update(doc(db, COLLECTION_NAME, docSnap.id), {
+      imageUrl: deleteField(),
+      updatedAt: serverTimestamp(),
+    });
+  });
+  await batch.commit();
+  return snapshot.size;
 };
 
 export const searchCafeImages = async (cafeName: string): Promise<string[]> => {
