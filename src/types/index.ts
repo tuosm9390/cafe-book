@@ -2,6 +2,7 @@ export interface Cafe {
   id: string;
   name: string;
   address: string;
+  imageUrl?: string;
   images?: string[];
   location: {
     latitude: number;
@@ -10,6 +11,9 @@ export interface Cafe {
   createdAt: any; // firebase.firestore.Timestamp
   updatedAt: any;
   createdBy: string;
+  averageRating?: number;
+  totalRatings?: number;
+  favoriteCount?: number;
 }
 
 export interface Interaction {

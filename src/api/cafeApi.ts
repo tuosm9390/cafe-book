@@ -67,6 +67,18 @@ export const deleteCafe = async (id: string) => {
   );
 };
 
+export const updateCafeImageUrl = async (id: string, imageUrl: string) => {
+  const cafeDoc = doc(db, COLLECTION_NAME, id);
+  return await withTimeout(
+    updateDoc(cafeDoc, {
+      imageUrl,
+      updatedAt: serverTimestamp(),
+    }),
+    10000,
+    '카페 이미지 URL을 업데이트하는 중 시간이 초과되었습니다.'
+  );
+};
+
 export const searchCafeImages = async (cafeName: string): Promise<string[]> => {
   const apiKey = import.meta.env.VITE_KAKAO_REST_API_KEY || import.meta.env.VITE_KAKAO_MAP_API_KEY;
   if (!apiKey || apiKey === 'your_kakao_javascript_api_key') return [];

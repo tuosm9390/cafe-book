@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDocs, updateDoc, writeBatch } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
 const SAMPLE_CAFES = [
@@ -42,11 +42,47 @@ export const seedCafes = async () => {
         ...cafe,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+        averageRating: 0,
+        totalRatings: 0,
+        favoriteCount: 0,
       });
     }
     console.log('[Seeding] 카페 데이터 시딩 완료!');
   } catch (error) {
     console.error('[Seeding] 카페 데이터 시딩 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 기존 카페 데이터에 집계 필드를 초기화합니다.
+ */
+export const migrateCafeAggregateFields = async () => {
+  console.log('[Migration] 카페 집계 필드 초기화 시작...');
+  try {
+    const querySnapshot = await getDocs(collection(db, 'cafes'));
+    const batch = writeBatch(db);
+    let count = 0;
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.averageRating === undefined || data.totalRatings === undefined || data.favoriteCount === undefined) {
+        batch.update(doc.ref, {
+          averageRating: data.averageRating ?? 0,
+          totalRatings: data.totalRatings ?? 0,
+          favoriteCount: data.favoriteCount ?? 0,
+          updatedAt: serverTimestamp(),
+        });
+        count++;
+      }
+    });
+
+    if (count > 0) {
+      await batch.commit();
+    }
+    console.log(`[Migration] ${count}개의 카페 데이터 초기화 완료!`);
+  } catch (error) {
+    console.error('[Migration] 카페 데이터 초기화 실패:', error);
     throw error;
   }
 };
