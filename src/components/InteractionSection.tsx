@@ -15,16 +15,21 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ cafeId, userId,
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [errorMessage, setShowError] = useState<string | null>(null);
   
   const isInitialMount = useRef(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const interaction = await getInteraction(cafeId, userId);
-      if (interaction) {
-        setRating(interaction.rating);
-        setComment(interaction.comment || '');
-        setIsFavorite(interaction.isFavorite);
+      try {
+        const interaction = await getInteraction(cafeId, userId);
+        if (interaction) {
+          setRating(interaction.rating);
+          setComment(interaction.comment || '');
+          setIsFavorite(interaction.isFavorite);
+        }
+      } catch (error) {
+        console.error('Failed to fetch interaction:', error);
       }
     };
     fetchData();
@@ -37,18 +42,32 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ cafeId, userId,
       return;
     }
     
+    const save = async () => {
+      try {
+        setShowError(null);
+        await saveInteraction(cafeId, userId, { rating, isFavorite, comment });
+      } catch (error: any) {
+        console.error('Auto-save failed:', error);
+        setShowError('자동 저장에 실패했습니다. 권한이 없거나 네트워크 오류일 수 있습니다.');
+      }
+    };
+    
+    // 디바운스 로직은 interactionApi에 있으나 에러 처리를 위해 래핑 고려 가능
+    // 여기서는 간단히 interactionApi의 디바운스를 사용하고 수동 저장 시 에러 처리에 집중함
     debouncedSaveInteraction(cafeId, userId, { rating, isFavorite, comment });
   }, [rating, isFavorite, cafeId, userId]);
 
   const handleSave = async () => {
     setIsSaving(true);
     setShowSuccess(false);
+    setShowError(null);
     try {
       await saveInteraction(cafeId, userId, { rating, comment, isFavorite });
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save interaction:', error);
+      setShowError(error.message || '리뷰 저장 중 오류가 발생했습니다.');
     } finally {
       setIsSaving(false);
     }
@@ -113,6 +132,12 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ cafeId, userId,
           <div className="flex items-center justify-center text-green-600 text-xs font-medium animate-in fade-in slide-in-from-top-1 duration-300">
             <CheckCircle size={14} className="mr-1" />
             성공적으로 저장되었습니다!
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="text-red-500 text-xs text-center font-medium animate-in fade-in slide-in-from-top-1 duration-300">
+            {errorMessage}
           </div>
         )}
       </div>

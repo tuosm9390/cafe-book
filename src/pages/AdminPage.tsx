@@ -9,6 +9,7 @@ import {
   Map as MapIcon,
   Loader2,
   Plus,
+  Database,
 } from "lucide-react";
 import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +17,7 @@ import { loadKakaoMapSDK } from "../utils/mapLoader";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth, handleFirestoreError } from "../api/firebase";
 import { Button } from "../components/ui/button";
+import { migrateCafeAggregateFields } from "../api/seedApi";
 import {
   Card,
   CardContent,
@@ -36,6 +38,7 @@ const AdminPage: React.FC = () => {
   const { cafes, loading, refresh } = useCafes();
   const [editingCafe, setEditingCafe] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isMigrating, setIsMigrating] = useState(false);
   const navigate = useNavigate();
   const loadStartTime = React.useRef<number | null>(null);
 
@@ -56,6 +59,22 @@ const AdminPage: React.FC = () => {
       navigate("/");
     } catch (error) {
       console.error("로그아웃 실패:", error);
+    }
+  };
+
+  const handleMigration = async () => {
+    if (window.confirm("기존 카페 데이터의 집계 필드를 초기화하시겠습니까?")) {
+      setIsMigrating(true);
+      try {
+        await migrateCafeAggregateFields();
+        alert("마이그레이션이 완료되었습니다.");
+        refresh();
+      } catch (error) {
+        console.error("마이그레이션 실패:", error);
+        alert("마이그레이션 중 오류가 발생했습니다.");
+      } finally {
+        setIsMigrating(false);
+      }
     }
   };
 
@@ -125,6 +144,10 @@ const AdminPage: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleMigration} disabled={isMigrating}>
+              {isMigrating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+              데이터 마이그레이션
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/")}>
               <MapIcon className="mr-2 h-4 w-4" /> 지도 돌아가기
             </Button>
