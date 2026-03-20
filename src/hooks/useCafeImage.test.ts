@@ -51,7 +51,8 @@ describe('useCafeImage', () => {
     expect(updateCafeImageUrl).toHaveBeenCalledWith('cafe-1', 'https://example.com/fetched.jpg');
   });
 
-  it('handles fetch failure gracefully and caches DEFAULT', async () => {
+  // T004: 기존 'DEFAULT' 캐싱 테스트 → null 반환 + updateCafeImageUrl 미호출로 수정
+  it('handles fetch failure gracefully without caching DEFAULT', async () => {
     (fetchCafeImage as any).mockRejectedValue(new Error('Network Error'));
 
     const { result } = renderHook(() => useCafeImage(mockCafe));
@@ -60,11 +61,38 @@ describe('useCafeImage', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.imageUrl).toBe('DEFAULT');
+    expect(result.current.imageUrl).toBeNull();
     expect(result.current.error).toBe('Failed to load image');
-    // even if it failed the code tries to update DEFAULT? Wait, in my hook:
-    // try { const fetchedUrl = ...; finalUrl = fetchedUrl || 'DEFAULT'; await updateCafeImageUrl... }
-    // catch { setError... setImageUrl('DEFAULT') }
-    // Wait, the catch block doesn't update firestore.
+    expect(updateCafeImageUrl).not.toHaveBeenCalled();
+  });
+
+  // T003: fetchCafeImage가 null 반환 시 updateCafeImageUrl 미호출 테스트
+  it('does not cache when fetch returns null', async () => {
+    (fetchCafeImage as any).mockResolvedValue(null);
+
+    const { result } = renderHook(() => useCafeImage(mockCafe));
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.imageUrl).toBeNull();
+    expect(updateCafeImageUrl).not.toHaveBeenCalled();
+  });
+
+  // T002: cafe.imageUrl === 'DEFAULT'인 경우 재시도해야 함
+  it('retries fetch when imageUrl is DEFAULT (stale cache)', async () => {
+    const cafeWithDefault = { ...mockCafe, imageUrl: 'DEFAULT' };
+    (fetchCafeImage as any).mockResolvedValue('https://example.com/fresh.jpg');
+
+    const { result } = renderHook(() => useCafeImage(cafeWithDefault));
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(fetchCafeImage).toHaveBeenCalledWith('Test Cafe', 'Test Address');
+    expect(result.current.imageUrl).toBe('https://example.com/fresh.jpg');
+    expect(updateCafeImageUrl).toHaveBeenCalledWith('cafe-1', 'https://example.com/fresh.jpg');
   });
 });

@@ -65,13 +65,13 @@ const CafeInfoPanel: React.FC<CafeInfoPanelProps> = ({ cafe, userId, onClose, cl
           </div>
         ) : imageUrl && imageUrl !== 'DEFAULT' ? (
           <div className="flex overflow-x-auto h-full snap-x snap-mandatory hide-scrollbar">
-            <img 
-              src={imageUrl} 
+            <img
+              src={imageUrl}
               alt={`${cafe.name} 메인 이미지`}
               className="h-full w-full object-cover snap-center shrink-0 border-r border-white/20 last:border-r-0"
               loading="lazy"
+              referrerPolicy="no-referrer"
               onError={(e) => {
-                // 이미지 로드 실패 시 숨김 처리
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
             />

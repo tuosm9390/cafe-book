@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useCafes } from "../hooks/useCafes";
-import { addCafe, updateCafe, deleteCafe } from "../api/cafeApi";
+import { addCafe, updateCafe, deleteCafe, resetDefaultImageUrls } from "../api/cafeApi";
 import CafeForm from "../components/CafeForm";
 import {
   Edit2,
@@ -10,6 +10,7 @@ import {
   Loader2,
   Plus,
   Database,
+  ImageOff,
 } from "lucide-react";
 import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +40,7 @@ const AdminPage: React.FC = () => {
   const [editingCafe, setEditingCafe] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isMigrating, setIsMigrating] = useState(false);
+  const [isResettingImages, setIsResettingImages] = useState(false);
   const navigate = useNavigate();
   const loadStartTime = React.useRef<number | null>(null);
 
@@ -59,6 +61,22 @@ const AdminPage: React.FC = () => {
       navigate("/");
     } catch (error) {
       console.error("로그아웃 실패:", error);
+    }
+  };
+
+  const handleImageCacheReset = async () => {
+    if (window.confirm("'DEFAULT'로 저장된 이미지 캐시를 초기화하시겠습니까?\n초기화 후 카페 재접근 시 이미지를 다시 불러옵니다.")) {
+      setIsResettingImages(true);
+      try {
+        const count = await resetDefaultImageUrls();
+        alert(`이미지 캐시 초기화 완료: ${count}개 카페가 초기화되었습니다.`);
+        refresh();
+      } catch (error) {
+        console.error("[AdminPage] 이미지 캐시 초기화 실패:", error);
+        alert("이미지 캐시 초기화 중 오류가 발생했습니다.");
+      } finally {
+        setIsResettingImages(false);
+      }
     }
   };
 
@@ -144,6 +162,10 @@ const AdminPage: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleImageCacheReset} disabled={isResettingImages}>
+              {isResettingImages ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageOff className="mr-2 h-4 w-4" />}
+              이미지 캐시 초기화
+            </Button>
             <Button variant="outline" size="sm" onClick={handleMigration} disabled={isMigrating}>
               {isMigrating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
               데이터 마이그레이션
