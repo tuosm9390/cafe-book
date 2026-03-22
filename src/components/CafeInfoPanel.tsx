@@ -57,7 +57,7 @@ const CafeInfoPanel: React.FC<CafeInfoPanelProps> = ({ cafe, userId, onClose, cl
       </div>
 
       {/* Image Gallery */}
-      <div className="bg-gray-50 border-b border-gray-100 h-[140px] relative">
+      <div className="bg-gray-50 border-b border-gray-100 h-[220px] relative">
         {isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
             <Loader2 className="animate-spin mb-2" size={24} />

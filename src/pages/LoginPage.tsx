@@ -31,7 +31,11 @@ const LoginPage: React.FC = () => {
       {/* 배경 영역 (2/3) */}
       <div
         className="hidden md:flex md:w-2/3 items-center justify-center p-12 relative overflow-hidden"
-        style={{ backgroundImage: "url('/images/coff-pedia-thumbnail.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{
+          backgroundImage: "url('/images/coff-pedia-thumbnail.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 max-w-lg text-center text-white">
@@ -66,8 +70,8 @@ const LoginPage: React.FC = () => {
           )}
 
           <div className="space-y-4">
-            <SocialLoginButtons 
-              isSignupMode={isSignupMode} 
+            <SocialLoginButtons
+              isSignupMode={isSignupMode}
               onSuccess={handleAuthSuccess}
               onError={handleAuthError}
             />

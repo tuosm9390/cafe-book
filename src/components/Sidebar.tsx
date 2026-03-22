@@ -40,17 +40,23 @@ const Sidebar: React.FC<SidebarProps> = ({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
           />
-          <Search className="absolute left-3 top-2.5 text-muted-foreground" size={18} />
+          <Search
+            className="absolute left-3 top-2.5 text-muted-foreground"
+            size={18}
+          />
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="p-4 space-y-4">
+          <div className="p-3 space-y-2">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-full" />
+              <div key={i} className="flex items-start gap-3">
+                <Skeleton className="w-16 h-16 rounded-md flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
               </div>
             ))}
           </div>
