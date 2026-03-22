@@ -8,7 +8,7 @@ export async function fetchCafeImage(cafeName: string, address: string): Promise
 
   try {
     const query = `${address} ${cafeName}`;
-    const url = `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(query)}&size=1`;
+    const url = `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(query)}&size=10`;
     
     const response = await fetch(url, {
       method: 'GET',
