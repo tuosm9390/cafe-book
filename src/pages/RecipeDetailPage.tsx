@@ -23,7 +23,24 @@ const RecipeDetailPage: React.FC = () => {
         const docRef = doc(db, 'recipes', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setRecipe({ id: docSnap.id, ...docSnap.data() } as Recipe);
+          const data = docSnap.data();
+          // Lazy Migration: 상세 페이지에서도 데이터 보정
+          let currentStartTime = 0;
+          const steps = (data.steps || []).map((step: any) => {
+            if (step.startTime === undefined) {
+              const newStep = { ...step, startTime: currentStartTime };
+              currentStartTime += step.time || 0;
+              return newStep;
+            }
+            return step;
+          });
+
+          setRecipe({ 
+            id: docSnap.id, 
+            ...data,
+            steps,
+            totalTimeComment: data.totalTimeComment || '' 
+          } as Recipe);
         }
       } catch (error) {
         console.error('Error fetching recipe:', error);
@@ -85,8 +102,10 @@ const RecipeDetailPage: React.FC = () => {
             </div>
             <div className="bg-muted/50 p-3 rounded-lg flex flex-col items-center justify-center space-y-1">
               <Clock className="h-4 w-4 text-primary" />
-              <span className="text-xs text-muted-foreground">총 시간</span>
-              <span className="text-sm font-bold">{formatSecondsToTime(recipe.totalTime)}</span>
+              <span className="text-xs text-muted-foreground">총 추출 시간</span>
+              <span className="text-sm font-bold whitespace-nowrap">
+                {recipe.totalTimeComment || formatSecondsToTime(recipe.totalTime)}
+              </span>
             </div>
           </div>
 
@@ -99,8 +118,8 @@ const RecipeDetailPage: React.FC = () => {
 
           {recipe.comment && (
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold">코멘트</h3>
-              <div className="bg-muted/30 p-4 rounded-lg text-sm whitespace-pre-wrap leading-relaxed italic text-muted-foreground">
+              <h3 className="text-sm font-semibold">레시피 메모</h3>
+              <div className="bg-muted/30 p-4 rounded-lg text-sm whitespace-pre-wrap leading-relaxed italic text-muted-foreground border">
                 "{recipe.comment}"
               </div>
             </div>
@@ -119,22 +138,28 @@ const RecipeDetailPage: React.FC = () => {
       <div className="h-full p-6 bg-muted/30 overflow-y-auto">
         {recipe && recipe.steps.length > 0 && (
           <div className="max-w-3xl mx-auto space-y-6">
-            <h3 className="text-lg font-bold">추출 단계 상세</h3>
+            <h3 className="text-lg font-bold px-1">추출 단계 상세</h3>
             <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
               <Table>
                 <TableHeader className="bg-muted/50">
                   <TableRow>
                     <TableHead className="w-32">단계</TableHead>
-                    <TableHead>시간</TableHead>
-                    <TableHead>물 사용량</TableHead>
-                    <TableHead className="text-right">누적 물 양</TableHead>
+                    <TableHead>시작 시간</TableHead>
+                    <TableHead>소요</TableHead>
+                    <TableHead>물 양</TableHead>
+                    <TableHead className="text-right">누적</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {recipe.steps.map((step, index) => (
                     <TableRow key={index}>
                       <TableCell className="font-semibold">{step.name}</TableCell>
-                      <TableCell>{step.time}초</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {formatSecondsToTime(step.startTime ?? 0)}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {index < recipe.steps.length - 1 ? `${step.time}초` : '-'}
+                      </TableCell>
                       <TableCell>{step.waterUsed}g</TableCell>
                       <TableCell className="text-right font-mono font-medium text-primary">
                         {step.waterCumulative}g
