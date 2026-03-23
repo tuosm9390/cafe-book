@@ -23,7 +23,7 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, onRatingChange, interac
             star <= rating ? "text-primary fill-primary" : "text-muted border-none"
           )}
         >
-          <Star size={20} className={cn(star > rating && "text-muted-foreground")} />
+          <Star size={20} fill={star <= rating ? "currentColor" : "none"} className={cn(star > rating && "text-muted-foreground")} />
         </button>
       ))}
     </div>

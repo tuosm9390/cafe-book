@@ -42,20 +42,8 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ cafeId, userId,
       return;
     }
     
-    const save = async () => {
-      try {
-        setShowError(null);
-        await saveInteraction(cafeId, userId, { rating, isFavorite, comment });
-      } catch (error: any) {
-        console.error('Auto-save failed:', error);
-        setShowError('자동 저장에 실패했습니다. 권한이 없거나 네트워크 오류일 수 있습니다.');
-      }
-    };
-    
-    // 디바운스 로직은 interactionApi에 있으나 에러 처리를 위해 래핑 고려 가능
-    // 여기서는 간단히 interactionApi의 디바운스를 사용하고 수동 저장 시 에러 처리에 집중함
     debouncedSaveInteraction(cafeId, userId, { rating, isFavorite, comment });
-  }, [rating, isFavorite, cafeId, userId]);
+  }, [rating, isFavorite, comment, cafeId, userId]);
 
   const handleSave = async () => {
     setIsSaving(true);
