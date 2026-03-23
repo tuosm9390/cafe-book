@@ -5,6 +5,8 @@ import AdminPage from "./pages/AdminPage";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import RecipePage from "./pages/RecipePage";
+import RecipeCreatePage from "./pages/RecipeCreatePage";
+import RecipeDetailPage from "./pages/RecipeDetailPage";
 import CommunityPage from "./pages/CommunityPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -39,6 +41,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <RecipePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recipe/create"
+            element={
+              <ProtectedRoute>
+                <RecipeCreatePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recipe/:id"
+            element={
+              <ProtectedRoute>
+                <RecipeDetailPage />
               </ProtectedRoute>
             }
           />
