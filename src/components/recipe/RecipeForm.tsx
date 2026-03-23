@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { calculateRatio, calculateTotalTime, formatSecondsToTime } from '../../utils/recipeUtils';
+import { calculateRatio, formatSecondsToTime } from '../../utils/recipeUtils';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/toast';
@@ -18,20 +18,27 @@ const RecipeForm: React.FC = () => {
   const [waterAmount, setWaterAmount] = useState<number>(300);
   const [ratio, setRatio] = useState('1:15.0');
   const [steps, setSteps] = useState<ExtractionStep[]>([]);
-  const [totalTime, setTotalTime] = useState(0);
+  const [totalTime, setTotalTime] = useState(0); // 시스템용 계산 값
+  const [totalTimeComment, setTotalTimeComment] = useState(''); // 사용자 코멘트
   const [comment, setComment] = useState('');
   
   const { addRecipe, isLoading } = useRecipes();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // 비율 및 총 시간 실시간 계산
+  // 비율 실시간 계산
   useEffect(() => {
     setRatio(calculateRatio(coffeeAmount, waterAmount));
   }, [coffeeAmount, waterAmount]);
 
+  // 시스템용 총 추출 시간 계산 (마지막 단계 시작 시간 + 약 30초 추정 또는 코멘트 기반 정규식 추출 등 고려 가능하나 일단 마지막 시작 시간 기준)
   useEffect(() => {
-    setTotalTime(calculateTotalTime(steps));
+    const lastStep = steps[steps.length - 1];
+    if (lastStep) {
+      setTotalTime((lastStep.startTime ?? 0) + 30);
+    } else {
+      setTotalTime(0);
+    }
   }, [steps]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,6 +58,7 @@ const RecipeForm: React.FC = () => {
         ratio,
         steps,
         totalTime,
+        totalTimeComment,
         comment,
       });
       
@@ -111,13 +119,20 @@ const RecipeForm: React.FC = () => {
 
       <RecipeStepList steps={steps} onChange={setSteps} />
 
-      <div className="flex justify-between items-center px-1">
-        <span className="text-sm font-medium">총 추출 시간</span>
-        <span className="text-lg font-mono font-bold text-primary">{formatSecondsToTime(totalTime)}</span>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <label className="text-sm font-medium">총 추출 시간</label>
+          <span className="text-[10px] text-muted-foreground">시스템 예상: {formatSecondsToTime(totalTime)}</span>
+        </div>
+        <Input 
+          placeholder="예: 2분 30초" 
+          value={totalTimeComment}
+          onChange={(e) => setTotalTimeComment(e.target.value)}
+        />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">코멘트</label>
+        <label className="text-sm font-medium">레시피 메모</label>
         <Textarea 
           placeholder="맛 평가나 특이사항을 기록하세요." 
           className="min-h-[100px]"

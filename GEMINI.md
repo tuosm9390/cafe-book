@@ -11,6 +11,7 @@ Auto-generated from all feature plans. Last updated: 2026-03-23
 - TypeScript 5.x, Node.js 20.x + React 18.3.1, react-kakao-maps-sdk 1.1.27, Firebase SDK 10.13.0, Tailwind CSS 3.4.10 (005-fix-map-initialization)
 - TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS (006-admin-nav-map-search)
 - TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10.13.0+, Tailwind CSS (009-check-firebase-logic)
+- TypeScript 5.x, Node.js 20.x + React 18.x, Firebase SDK 10.x, Tailwind CSS (020-recipe-step-time-logic)
 
 - **Language**: TypeScript 5.x, Node.js 20.x
 - **Frameworks**: React 18+, react-kakao-maps-sdk
@@ -49,9 +50,9 @@ tests/
 - **Firebase**: SDK v10+ 모듈형 스타일(Functional/Modular) 사용.
 
 ## Recent Changes
+- 020-recipe-step-time-logic: Added TypeScript 5.x, Node.js 20.x + React 18.x, Firebase SDK 10.x, Tailwind CSS
 - 019-recipe-page-feature: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Tailwind CSS, Lucide React (Icons)
 - 016-fix-firebase-permission: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
-- 015-fetch-kakao-image: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
 
 
 <!-- MANUAL ADDITIONS START -->
