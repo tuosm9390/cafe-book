@@ -7,11 +7,16 @@ import { useRecipes } from '../../hooks/useRecipes';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/toast';
 import RecipeStepList from './RecipeStepList';
-import { ExtractionStep } from '../../types/recipe';
+import { ExtractionStep, Recipe } from '../../types/recipe';
 
 import { Textarea } from '@/components/ui/textarea';
 
-const RecipeForm: React.FC = () => {
+interface RecipeFormProps {
+  initialData?: Recipe;
+  onSuccess?: () => void;
+}
+
+const RecipeForm: React.FC<RecipeFormProps> = ({ initialData, onSuccess }) => {
   const [title, setTitle] = useState('');
   const [waterTemp, setWaterTemp] = useState<number>(92);
   const [coffeeAmount, setCoffeeAmount] = useState<number>(20);
@@ -22,16 +27,30 @@ const RecipeForm: React.FC = () => {
   const [totalTimeComment, setTotalTimeComment] = useState(''); // 사용자 코멘트
   const [comment, setComment] = useState('');
   
-  const { addRecipe, isLoading } = useRecipes();
+  const { addRecipe, updateRecipe, isLoading } = useRecipes();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // 초기 데이터 설정 (수정 모드)
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || '');
+      setWaterTemp(initialData.waterTemp || 92);
+      setCoffeeAmount(initialData.coffeeAmount || 20);
+      setWaterAmount(initialData.waterAmount || 300);
+      setSteps(initialData.steps || []);
+      setTotalTime(initialData.totalTime || 0);
+      setTotalTimeComment(initialData.totalTimeComment || '');
+      setComment(initialData.comment || '');
+    }
+  }, [initialData]);
 
   // 비율 실시간 계산
   useEffect(() => {
     setRatio(calculateRatio(coffeeAmount, waterAmount));
   }, [coffeeAmount, waterAmount]);
 
-  // 시스템용 총 추출 시간 계산 (마지막 단계 시작 시간 + 약 30초 추정 또는 코멘트 기반 정규식 추출 등 고려 가능하나 일단 마지막 시작 시간 기준)
+  // 시스템용 총 추출 시간 계산
   useEffect(() => {
     const lastStep = steps[steps.length - 1];
     if (lastStep) {
@@ -49,21 +68,32 @@ const RecipeForm: React.FC = () => {
       return;
     }
 
+    const recipeData = {
+      title,
+      waterTemp,
+      coffeeAmount,
+      waterAmount,
+      ratio,
+      steps,
+      totalTime,
+      totalTimeComment,
+      comment,
+    };
+
     try {
-      await addRecipe({
-        title,
-        waterTemp,
-        coffeeAmount,
-        waterAmount,
-        ratio,
-        steps,
-        totalTime,
-        totalTimeComment,
-        comment,
-      });
+      if (initialData?.id) {
+        await updateRecipe(initialData.id, recipeData);
+        toast({ title: '레시피가 수정되었습니다.' });
+      } else {
+        await addRecipe(recipeData);
+        toast({ title: '레시피가 저장되었습니다.' });
+      }
       
-      toast({ title: '레시피가 저장되었습니다.' });
-      navigate('/recipe');
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/recipe');
+      }
     } catch (error) {
       toast({ title: '저장 중 오류가 발생했습니다.', variant: 'destructive' });
     }
@@ -142,7 +172,7 @@ const RecipeForm: React.FC = () => {
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? '저장 중...' : '레시피 저장'}
+        {isLoading ? '저장 중...' : initialData ? '레시피 수정' : '레시피 저장'}
       </Button>
     </form>
   );
