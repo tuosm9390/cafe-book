@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Recipe } from '../types/recipe';
-import { getRecipesByUserId, createRecipe as apiCreateRecipe } from '../api/recipeApi';
+import { 
+  getRecipesByUserId, 
+  createRecipe as apiCreateRecipe, 
+  updateRecipe as apiUpdateRecipe,
+  deleteRecipe as apiDeleteRecipe
+} from '../api/recipeApi';
 import { useAuth } from './useAuth';
 
 export const useRecipes = () => {
@@ -39,6 +44,28 @@ export const useRecipes = () => {
     }
   };
 
+  const updateRecipe = async (id: string, recipe: Partial<Recipe>) => {
+    if (!user) throw new Error('로그인이 필요합니다.');
+    try {
+      await apiUpdateRecipe(id, recipe);
+      await fetchRecipes();
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  const deleteRecipe = async (id: string) => {
+    if (!user) throw new Error('로그인이 필요합니다.');
+    try {
+      await apiDeleteRecipe(id);
+      await fetchRecipes();
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchRecipes();
   }, [fetchRecipes]);
@@ -49,5 +76,7 @@ export const useRecipes = () => {
     error,
     fetchRecipes,
     addRecipe,
+    updateRecipe,
+    deleteRecipe,
   };
 };

@@ -1,15 +1,15 @@
-import React from 'react';
-import Layout from '../components/Layout';
-import RecipeForm from '../components/recipe/RecipeForm';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import Layout from "../components/Layout";
+import RecipeForm from "../components/recipe/RecipeForm";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const RecipeCreatePage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/recipe');
+    navigate("/recipe");
   };
 
   const sidebarContent = (
@@ -20,16 +20,18 @@ const RecipeCreatePage: React.FC = () => {
         </Button>
         <h1 className="text-xl font-bold">새 레시피 작성</h1>
       </div>
-      
+
       <RecipeForm />
     </div>
   );
 
   return (
-    <Layout sidebar={sidebarContent}>
+    <Layout sidebar={sidebarContent} sidebarClassName="md:w-[450px]">
       <div className="flex items-center justify-center h-full bg-muted/30">
         <div className="text-center space-y-2">
-          <p className="text-muted-foreground">레시피를 작성하여 나만의 커피 도감을 완성해보세요.</p>
+          <p className="text-muted-foreground">
+            레시피를 작성하여 나만의 커피 도감을 완성해보세요.
+          </p>
         </div>
       </div>
     </Layout>

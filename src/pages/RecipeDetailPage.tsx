@@ -5,16 +5,34 @@ import { db } from '../api/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Recipe } from '../types/recipe';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Thermometer, Coffee, Droplets, Clock } from 'lucide-react';
+import { ChevronLeft, Thermometer, Coffee, Droplets, Clock, Edit, Trash2 } from 'lucide-react';
 import { formatSecondsToTime } from '../utils/recipeUtils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useAuth } from '../hooks/useAuth';
+import { useRecipes } from '../hooks/useRecipes';
+import { useToast } from '@/components/ui/toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const RecipeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { deleteRecipe } = useRecipes();
+  const { toast } = useToast();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -55,13 +73,65 @@ const RecipeDetailPage: React.FC = () => {
     navigate('/recipe');
   };
 
+  const handleEdit = () => {
+    navigate(`/recipe/edit/${id}`);
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+    setIsDeleting(true);
+    try {
+      await deleteRecipe(id);
+      toast({ title: '레시피가 삭제되었습니다.' });
+      navigate('/recipe');
+    } catch (error) {
+      toast({ title: '삭제 중 오류가 발생했습니다.', variant: 'destructive' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isOwner = recipe && user && recipe.userId === user.uid;
+
   const sidebarContent = (
     <div className="p-4 space-y-6">
-      <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" onClick={handleBack}>
-          <ChevronLeft className="h-5 w-4" />
-        </Button>
-        <h1 className="text-xl font-bold">레시피 상세</h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ChevronLeft className="h-5 w-4" />
+          </Button>
+          <h1 className="text-xl font-bold">레시피 상세</h1>
+        </div>
+        
+        {isOwner && (
+          <div className="flex space-x-1">
+            <Button variant="ghost" size="icon" onClick={handleEdit} className="h-8 w-8 text-muted-foreground hover:text-primary">
+              <Edit className="h-4 w-4" />
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>레시피를 삭제하시겠습니까?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    삭제된 레시피는 복구할 수 없습니다. 정말로 삭제하시겠습니까?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>취소</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">
+                    삭제
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -134,7 +204,7 @@ const RecipeDetailPage: React.FC = () => {
   );
 
   return (
-    <Layout sidebar={sidebarContent}>
+    <Layout sidebar={sidebarContent} sidebarClassName="md:w-[450px]">
       <div className="h-full p-6 bg-muted/30 overflow-y-auto">
         {recipe && recipe.steps.length > 0 && (
           <div className="max-w-3xl mx-auto space-y-6">

@@ -2,6 +2,9 @@ import {
   collection, 
   addDoc, 
   getDocs, 
+  doc,
+  updateDoc,
+  deleteDoc,
   query, 
   where, 
   orderBy, 
@@ -25,6 +28,37 @@ export const createRecipe = async (recipe: Omit<Recipe, 'id' | 'createdAt'>): Pr
     return docRef.id;
   } catch (error) {
     console.error('Error adding recipe:', error);
+    throw error;
+  }
+};
+
+/**
+ * 기존 레시피를 수정합니다.
+ */
+export const updateRecipe = async (id: string, recipe: Partial<Recipe>): Promise<void> => {
+  try {
+    const docRef = doc(db, COLLECTION_NAME, id);
+    // userId, createdAt 등 민감한 필드는 수정 대상에서 제외되도록 안전하게 업데이트
+    const { id: _, userId: __, createdAt: ___, ...updateData } = recipe as any;
+    await updateDoc(docRef, {
+      ...updateData,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Error updating recipe:', error);
+    throw error;
+  }
+};
+
+/**
+ * 레시피를 삭제합니다.
+ */
+export const deleteRecipe = async (id: string): Promise<void> => {
+  try {
+    const docRef = doc(db, COLLECTION_NAME, id);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error('Error deleting recipe:', error);
     throw error;
   }
 };
