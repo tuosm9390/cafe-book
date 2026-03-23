@@ -1,6 +1,6 @@
 ﻿# Cafe Book Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-03-20
+Auto-generated from all feature plans. Last updated: 2026-03-23
 
 ## Active Technologies
 - TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Tailwind CSS, Lucide React (icons), React Router v6 (002-social-auth-integration)
@@ -49,9 +49,9 @@ tests/
 - **Firebase**: SDK v10+ 모듈형 스타일(Functional/Modular) 사용.
 
 ## Recent Changes
+- 019-recipe-page-feature: Added TypeScript 5.x, Node.js 20.x + React 18+, Firebase SDK 10+, Tailwind CSS, Lucide React (Icons)
 - 016-fix-firebase-permission: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
 - 015-fetch-kakao-image: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
-- 014-cafe-info-interaction: Added TypeScript 5.x, Node.js 20.x + React 18+, react-kakao-maps-sdk, Firebase SDK 10+, Tailwind CSS
 
 
 <!-- MANUAL ADDITIONS START -->
